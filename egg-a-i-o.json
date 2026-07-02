@@ -5,12 +5,12 @@
         "update_url": null
     },
     "exported_at": "2024-04-21T14:59:52+08:00",
-    "name": "AIO",
+    "name": "AIO - Auto PM2",
     "author": "dan@danbot.host",
-    "description": "NodeJS LTS, Java (OpenJDK) 21, Python 3.11+, Golang, .NET Core, NodeJS Puppeteer\/pm2\/yarn. Made by DanBot Hosting.",
+    "description": "NodeJS LTS, Java (OpenJDK) 21, Python 3.11+, Golang, .NET Core, NodeJS Puppeteer/pm2/yarn. Modded by Picung Store with Auto PM2 Deploy.",
     "features": null,
     "docker_images": {
-        "danbothosting\/aio": "danbothosting\/aio"
+        "kibiljoe/aio": "kibiljoe/aio"
     },
     "file_denylist": [],
     "startup": "{{STARTUP_CMD}}",
@@ -22,7 +22,7 @@
     },
     "scripts": {
         "installation": {
-            "script": null,
+            "script": "cat << 'EOF' > /mnt/server/start.sh\r\n#!/bin/bash\r\nif [ \"${USER_UPLOAD}\" == \"1\" ] && [ ! -f /home/container/package.json ]; then\r\n    echo \"Server masih kosong. Silakan upload script bot dan package.json terlebih dahulu!\"\r\n    exit 0\r\nfi\r\n\r\nnpm install\r\npm2 delete all\r\npm2 start npm --name \"bot-app\" -- start\r\npm2 logs\r\nEOF\r\nchmod +x /mnt/server/start.sh",
             "container": "alpine:3.4",
             "entrypoint": "ash"
         }
@@ -32,10 +32,20 @@
             "name": "Startup Command",
             "description": "The startup command for your server to use.",
             "env_variable": "STARTUP_CMD",
-            "default_value": "bash",
+            "default_value": "bash start.sh",
             "user_viewable": true,
             "user_editable": true,
             "rules": "required",
+            "field_type": "text"
+        },
+        {
+            "name": "User Uploaded Files",
+            "description": "Skip auto-start if no files are uploaded yet. (0 = false, 1 = true)",
+            "env_variable": "USER_UPLOAD",
+            "default_value": "1",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|boolean",
             "field_type": "text"
         }
     ]
